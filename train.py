@@ -22,6 +22,8 @@ for f in files:
 
 
 df = pd.concat(dataframes, ignore_index=True)
+df = df.sample(frac=0.1, random_state=42)
+print(f"Using 10% sample: {len(df)} rows")
 print(f"Dataset loaded! Total rows: {len(df)}, Total columns: {len(df.columns)}")
 
 
@@ -97,10 +99,14 @@ y_pred = rf_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Accuracy: {accuracy * 100:.2f}%")
 print("\nDetailed Report:")
-print(classification_report(y_test, y_pred, target_names=le.classes_))
+import numpy as np
+labels_in_test = np.unique(np.concatenate([y_test, y_pred]))
+print(classification_report(y_test, y_pred, labels=labels_in_test, target_names=le.classes_[labels_in_test], zero_division=0))
 
 
 print("\nStep 10: Saving model...")
+import os
+os.makedirs('models', exist_ok=True)
 joblib.dump(rf_model, 'models/rf_model.pkl')
 joblib.dump(scaler, 'models/scaler.pkl')
 joblib.dump(le, 'models/label_encoder.pkl')
