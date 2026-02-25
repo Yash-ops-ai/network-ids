@@ -11,13 +11,15 @@ st.write("Upload a CSV file containing network flows to detect attacks.")
 
 
 @st.cache_resource
+@st.cache_resource
 def load_models():
     model = joblib.load('models/rf_model.pkl')
     scaler = joblib.load('models/scaler.pkl')
     le = joblib.load('models/label_encoder.pkl')
-    return model, scaler, le
+    top_features = joblib.load('models/top_features.pkl')
+    return model, scaler, le, top_features
 
-model, scaler, le = load_models()
+model, scaler, le, top_features = load_models()
 
 
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -32,13 +34,6 @@ if uploaded_file is not None:
     st.subheader("Predictions")
     st.write("Processing your file...")
     X_new = df.select_dtypes(include=[np.number])
-    top_features = ['Src IP dec', 'Packet Length Variance', 'Packet Length Std',
-                    'Flow IAT Max', 'Bwd Packet Length Std', 'RST Flag Count',
-                    'Bwd Packet Length Mean', 'Total Length of Fwd Packet',
-                    'Subflow Fwd Bytes', 'Packet Length Max', 'Fwd Packet Length Max',
-                    'Fwd Packet Length Mean', 'Fwd Segment Size Avg', 'Dst Port',
-                    'Fwd Packet Length Std', 'Flow Duration', 'Fwd Packets/s',
-                    'Fwd IAT Max', 'Bwd Packet Length Max', 'Bwd Header Length']
 
     X_new = X_new[top_features]
     X_new = scaler.transform(X_new.values)
