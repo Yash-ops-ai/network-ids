@@ -41,7 +41,7 @@ if uploaded_file is not None:
                     'Fwd IAT Max', 'Bwd Packet Length Max', 'Bwd Header Length']
 
     X_new = X_new[top_features]
-    X_new = scaler.transform(X_new)
+    X_new = scaler.transform(X_new.values)
     y_pred = model.predict(X_new)
     predicted_labels = le.inverse_transform(y_pred)
     df['Prediction'] = predicted_labels
